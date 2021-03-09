@@ -6,6 +6,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
 
+OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true']}
+
 @client.event
 async def on_ready():
 	print(f'{client.user} has connected to Discord!')
@@ -23,7 +25,7 @@ async def on_message(message):
 		emoji_names = {emoji.name.casefold(): emoji
 			for emoji in message.guild.emojis}
 		for word in message.content.split():
-			if word.casefold() in emoji_names:
+			if word.casefold() in emoji_names and word.casefold() not in OK_WORDS:
 				violations.add((word, emoji_names[word.casefold()]))
 		if len(violations) != 0:
 			await message.add_reaction(weirdchamp)
