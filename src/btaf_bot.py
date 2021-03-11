@@ -6,7 +6,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
 
-OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true']}
+OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
 
 @client.event
 async def on_ready():
