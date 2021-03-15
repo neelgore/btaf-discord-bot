@@ -16,6 +16,10 @@ async def on_ready():
 async def on_message(message):
 	if message.author != client.user:
 
+		emoji_names = {emoji.name.casefold(): emoji
+			for emoji in message.guild.emojis}
+		#prepare dict of emote names to emote objets
+
 		if len(message.content.split()) == 1 \
 				and message.content.strip().casefold() in emoji_names \
 				and message.reference:
@@ -34,10 +38,6 @@ async def on_message(message):
 		else:
 			return
 		#find the weirdchamp emote and do nothing if it doesn't exist
-
-		emoji_names = {emoji.name.casefold(): emoji
-			for emoji in message.guild.emojis}
-		#prepare dict of emote names to emote objets
 
 		violations = set()
 		for word in message.content.split():
