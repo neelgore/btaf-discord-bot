@@ -39,15 +39,28 @@ async def on_message(message):
 		return
 	#find the weirdchamp emote and do nothing if it doesn't exist
 
-	violations = set()
+	violations = dict()
+	animated = dict()
 	for word in message.content.split():
 		if word.casefold() in emoji_names and word.casefold() not in OK_WORDS:
-			violations.add((word, emoji_names[word.casefold()]))
+			if not emoji_names[word.casefold()].animated:
+				violations[word] = emoji_names[word.casefold()]
+			else:
+				animated[word] = emoji_names[word.casefold()]
 	if len(violations) != 0:
 		await message.add_reaction(weirdchamp)
-	for violation in violations:
+	else:
+		if (len(animated) != 0):
+			new = " ".join((str(animated[w]) if w in animated else w) for w in message.content.split())
+			if len(new.split()) == 1:
+				await message.channel.send(f'**{message.author.display_name}:**')
+				await message.channel.send(new)
+			else:
+				await message.channel.send(f'**{message.author.display_name}:** {new}')
+			await message.delete()
+	for wrong, emoji in violations.items():
 		await message.channel.send(
-			f'''Typing {violation[0]} instead of {str(violation[1])} {str(weirdchamp)}''')
+			f'''Typing {wrong} instead of {str(emoji)} {str(weirdchamp)}''')
 
 @client.event
 async def on_message_edit(before, after):
