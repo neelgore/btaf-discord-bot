@@ -15,6 +15,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	if message.author == client.user: return
+	#ignore bot's own messages
 
 	emoji_names = {emoji.name.casefold(): emoji
 		for emoji in message.guild.emojis}
@@ -47,6 +48,8 @@ async def on_message(message):
 				violations[word] = emoji_names[word.casefold()]
 			else:
 				animated[word] = emoji_names[word.casefold()]
+	#populate animated and violations dicts
+
 	if len(violations) != 0:
 		await message.add_reaction(weirdchamp)
 	else:
@@ -65,12 +68,16 @@ async def on_message(message):
 @client.event
 async def on_message_edit(before, after):
 	await on_message(after)
+	#treat message edits as new messages
 
 @client.event
 async def on_reaction_add(reaction, user):
 	if user == client.user: return
+	#ignore bot's own reactions
+
 	if client.user in await reaction.users().flatten():
 		await reaction.message.remove_reaction(reaction.emoji, client.user)
+	#remove react once someone piggybacks
 
 if __name__ == '__main__':
 	client.run(TOKEN)
