@@ -17,16 +17,13 @@ async def on_message(message):
 	if message.author == client.user: return
 	#ignore bot's own messages
 
-	emoji_names = {emoji.name.casefold(): emoji
-		for emoji in message.guild.emojis}
+	emoji_names = {emoji.name.casefold(): emoji for emoji in message.guild.emojis}
 	#prepare dict of emote names to emote objets
 
 	if len(message.content.split()) == 1 \
-			and message.content.strip().casefold() in emoji_names \
-			and message.reference:
+			and message.content.strip().casefold() in emoji_names and message.reference:
 		emoji = emoji_names[message.content.strip().casefold()]
-		original_message = await message.channel.fetch_message(
-			message.reference.message_id)
+		original_message = await message.channel.fetch_message(message.reference.message_id)
 		await original_message.add_reaction(emoji)
 		await message.delete()
 		return
@@ -50,9 +47,7 @@ async def on_message(message):
 				animated[word] = emoji_names[word.casefold()]
 	#populate animated and violations dicts
 
-	if len(violations) != 0:
-		await message.add_reaction(weirdchamp)
-	else:
+	if len(violations) == 0:
 		if (len(animated) != 0):
 			new = " ".join((str(animated[w]) if w in animated else w) for w in message.content.split())
 			if len(new.split()) == 1:
@@ -61,9 +56,10 @@ async def on_message(message):
 			else:
 				await message.channel.send(f'**{message.author.display_name}:** {new}')
 			await message.delete()
-	for wrong, emoji in violations.items():
-		await message.channel.send(
-			f'''Typing {wrong} instead of {str(emoji)} {str(weirdchamp)}''')
+	else:
+		await message.add_reaction(weirdchamp)
+		await message.reply('\n'.join(
+			f'''Typing {wrong} instead of {str(emoji)} {str(weirdchamp)}''' for wrong, emoji in violations.items()))
 
 @client.event
 async def on_message_edit(before, after):
