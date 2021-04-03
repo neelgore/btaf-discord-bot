@@ -6,11 +6,17 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
 
-OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
 
 @client.event
 async def on_ready():
 	print(f'{client.user} has connected to Discord!')
+	client.OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
+	for guild in client.guilds:
+		for emoji in guild.emojis:
+			if emoji.name.casefold() == 'weirdchamp'.casefold():
+				client.WEIRDCHAMP = emoji
+	#find and save the weirdchamp emote
+	client.shamed_messages = set()
 
 @client.event
 async def on_message(message):
@@ -29,18 +35,10 @@ async def on_message(message):
 		return
 	#replace replies with emote names with a reaction of the emote
 
-	for emoji in message.guild.emojis:
-		if emoji.name.casefold() == 'weirdchamp':
-			weirdchamp = emoji
-			break
-	else:
-		return
-	#find the weirdchamp emote and do nothing if it doesn't exist
-
 	violations = dict()
 	animated = dict()
 	for word in message.content.split():
-		if word.casefold() in emoji_names and word.casefold() not in OK_WORDS:
+		if word.casefold() in emoji_names and word.casefold() not in client.OK_WORDS:
 			if not emoji_names[word.casefold()].animated:
 				violations[word] = emoji_names[word.casefold()]
 			else:
@@ -56,13 +54,19 @@ async def on_message(message):
 			else:
 				await message.channel.send(f'**{message.author.display_name}:** {new}')
 			await message.delete()
+			#simulate having Nitro
 	else:
-		await message.add_reaction(weirdchamp)
+		await message.add_reaction(client.WEIRDCHAMP)
 		await message.reply('\n'.join(
-			f'''Typing {wrong} instead of {str(emoji)} {str(weirdchamp)}''' for wrong, emoji in violations.items()))
+			f'''Typing {wrong} instead of {str(emoji)} {str(client.WEIRDCHAMP)}''' \
+			for wrong, emoji in violations.items()))
+		client.shamed_messages.add(message.id)
+		#shame and record message id
 
 @client.event
 async def on_message_edit(before, after):
+	if before.id in client.shamed_messages:
+		client.shamed_messages.remove(before.id)
 	await on_message(after)
 	#treat message edits as new messages
 
@@ -72,8 +76,9 @@ async def on_reaction_add(reaction, user):
 	#ignore bot's own reactions
 
 	if client.user in await reaction.users().flatten():
-		await reaction.message.remove_reaction(reaction.emoji, client.user)
-	#remove react once someone piggybacks
+		if reaction.message.id not in client.shamed_messages or reaction.emoji != client.WEIRDCHAMP:
+			await reaction.message.remove_reaction(reaction.emoji, client.user)
+	#remove react once someone piggybacks, piggyback is a weirdchamp shame
 
 if __name__ == '__main__':
 	client.run(DISCORD_TOKEN)
