@@ -3,7 +3,7 @@ import discord
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
 
 OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
@@ -76,4 +76,4 @@ async def on_reaction_add(reaction, user):
 	#remove react once someone piggybacks
 
 if __name__ == '__main__':
-	client.run(TOKEN)
+	client.run(DISCORD_TOKEN)
