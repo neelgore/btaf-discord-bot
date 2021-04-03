@@ -2,6 +2,7 @@ import os
 import discord
 from dotenv import load_dotenv
 
+
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
@@ -16,7 +17,7 @@ async def on_ready():
 			if emoji.name.casefold() == 'weirdchamp'.casefold():
 				client.WEIRDCHAMP = emoji
 	#find and save the weirdchamp emote
-	client.shamed_messages = set()
+	client.shamed_messages = {}
 
 @client.event
 async def on_message(message):
@@ -57,16 +58,19 @@ async def on_message(message):
 			#simulate having Nitro
 	else:
 		await message.add_reaction(client.WEIRDCHAMP)
-		await message.reply('\n'.join(
+		reply = await message.reply('\n'.join(
 			f'''Typing {wrong} instead of {str(emoji)} {str(client.WEIRDCHAMP)}''' \
 			for wrong, emoji in violations.items()))
-		client.shamed_messages.add(message.id)
+		client.shamed_messages[message.id] = reply.id
 		#shame and record message id
 
 @client.event
 async def on_message_edit(before, after):
 	if before.id in client.shamed_messages:
-		client.shamed_messages.remove(before.id)
+		await after.remove_reaction(client.WEIRDCHAMP, client.user)
+		old_shame = await before.channel.fetch_message(client.shamed_messages[before.id])
+		await old_shame.delete()
+		del client.shamed_messages[before.id]
 	await on_message(after)
 	#treat message edits as new messages
 
