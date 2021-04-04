@@ -20,9 +20,9 @@ def message_is_animated_react(message: discord.Message, emoji_names: {str: disco
 	return (text in emoji_names and message.reference is not None and emoji_names[text].animated \
 	and len(message.content.split()) == 1)
 
-def ping_and_time(message: discord.Message) -> ([discord.Role], datetime.datetime) or None:
-	'''checks if a message contains a ping(s) AND a time; returns the Roles pinged and how many
-	seconds to wait until the scheduled time'''
+def ping_and_time(message: discord.Message) -> ([discord.Role], int) or None:
+	'''checks if a message contains a ping(s) AND a time.
+	returns the Roles pinged and time in seconds until the scheduled time'''
 	time_to_wait = None
 	if message.role_mentions:
 		for word in message.content.split():

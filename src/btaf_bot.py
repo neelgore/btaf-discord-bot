@@ -57,8 +57,13 @@ async def on_message(message):
 			#simulate having Nitro
 	if p_and_t := helpers.ping_and_time(message):
 		roles, time_to_wait = p_and_t
-		if time_to_wait > 0:
-			await message.reply('Ping scheduled')
+		if time_to_wait > 0:			
+			m, s = divmod(time_to_wait, 60)
+			h, m = divmod(m, 60)
+			schedule = 'Ping scheduled in ' + str(int(h)) + (' hour ' if h == 1 else ' hours ') \
+				+ str(int(m)) + (' minute ' if m == 1 else ' minutes ') \
+				+ str(int(s)) + (' second.' if s == 1 else ' seconds.')
+			await message.reply(schedule)
 			await asyncio.sleep(time_to_wait)
 			await message.reply(' '.join(role.mention for role in roles))
 			await asyncio.sleep(10*60)
@@ -69,7 +74,7 @@ async def on_message(message):
 				if not member.voice or not member.voice.channel	or member.voice.channel.guild != message.guild}
 			if len(to_be_pinged) > 0:
 				everyone = ' '.join(member.mention for member in to_be_pinged)
-				await message.reply(everyone + '\n' + 'where the fuck are you?')
+				await message.reply(everyone + '\n' + str(emoji_names['modcheck']))
 
 @client.event
 async def on_message_edit(before, after):
