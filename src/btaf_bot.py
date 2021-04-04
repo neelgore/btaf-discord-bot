@@ -55,6 +55,7 @@ async def on_message(message):
 				await message.channel.send(f'**{message.author.display_name}:** {new}')
 			await message.delete()
 			#simulate having Nitro
+	print(helpers.ping_and_time(message))
 	if p_and_t := helpers.ping_and_time(message):
 		roles, time_to_wait = p_and_t
 		if time_to_wait > 0:			
