@@ -29,7 +29,6 @@ def ping_and_time(message: discord.Message) -> ([discord.Role], int) or None:
 		for word in message.content.split():
 			if match := re.match(TIME_REGEX, word):
 				hour, minute = match.groups()
-				print(hour, minute)
 				hour = int(hour)
 				minute = int(minute)
 				now = datetime.datetime.now(pytz.timezone('America/Los_Angeles'))
