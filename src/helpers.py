@@ -26,7 +26,7 @@ def ping_and_time(message: discord.Message) -> ([discord.Role], datetime.datetim
 	time_to_wait = None
 	if message.role_mentions:
 		for word in message.content.split():
-			if (match := re.match(TIME_REGEX, word)):
+			if match := re.match(TIME_REGEX, word):
 				hour, minute = match.groups()
 				hour = int(hour)
 				minute = int(minute)
