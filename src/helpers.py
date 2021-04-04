@@ -1,6 +1,7 @@
 import re
 import discord
 import datetime
+import pytz
 from functools import lru_cache
 
 OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
@@ -28,9 +29,10 @@ def ping_and_time(message: discord.Message) -> ([discord.Role], int) or None:
 		for word in message.content.split():
 			if match := re.match(TIME_REGEX, word):
 				hour, minute = match.groups()
+				print(hour, minute)
 				hour = int(hour)
 				minute = int(minute)
-				now = datetime.datetime.now()
+				now = datetime.datetime.now(pytz.timezone('America/Los_Angeles'))
 				time_to_wait = (now.replace(hour = hour if now.hour < 12 else hour + 12,
 					minute = minute, second = 0) - now).total_seconds()
 		if time_to_wait:
