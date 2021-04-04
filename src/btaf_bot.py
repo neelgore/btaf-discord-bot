@@ -69,12 +69,12 @@ async def on_message(message):
 			await asyncio.sleep(10*60)
 			if message.reactions:
 				yes = sorted(message.reactions, key = lambda reaction: reaction.count)[-1]
-			#I assume the emote with the most reacts is the one that rsvps a member
-			to_be_pinged = {member for member in await yes.users().flatten()\
-				if not member.voice or not member.voice.channel	or member.voice.channel.guild != message.guild}
-			if len(to_be_pinged) > 0:
-				everyone = ' '.join(member.mention for member in to_be_pinged)
-				await message.reply(everyone + '\n' + str(emoji_names['modcheck']))
+				#I assume the emote with the most reacts is the one that rsvps a member
+				to_be_pinged = {member for member in await yes.users().flatten()\
+					if not member.voice or not member.voice.channel	or member.voice.channel.guild != message.guild}
+				if len(to_be_pinged) > 0:
+					everyone = ' '.join(member.mention for member in to_be_pinged)
+					await message.reply(everyone + '\n' + str(emoji_names['modcheck']))
 
 @client.event
 async def on_message_edit(before, after):
