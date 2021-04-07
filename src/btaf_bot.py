@@ -52,7 +52,7 @@ async def on_message(message):
 				await message.channel.send(f'**{message.author.display_name}:**')
 				await message.channel.send(new_message)
 			else:
-				await message.channel.send(f'**{message.author.display_name}:** {new}')
+				await message.channel.send(f'**{message.author.display_name}:** {new_message}')
 			await message.delete()
 			#simulate having Nitro
 	if p_and_t := helpers.ping_and_time(message):
