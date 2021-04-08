@@ -36,6 +36,7 @@ async def on_message(message):
 	animated = dict()
 	for word in message.content.split():
 		if word.casefold() in emoji_names and word.casefold() not in helpers.OK_WORDS:
+			print(emoji_names[word.casefold()].animated)
 			if not emoji_names[word.casefold()].animated:
 				violations = True
 			else:
@@ -93,7 +94,7 @@ async def on_reaction_add(reaction, user):
 	if client.user in await reaction.users().flatten():
 		if reaction.emoji != helpers.find_emote(client, 'weirdchamp'):
 			await reaction.message.remove_reaction(reaction.emoji, client.user)
-	#remove react once someone piggybacks, piggyback is a weirdchamp shame
+	#remove react once someone piggybacks, unless piggyback is a weirdchamp shame
 
 if __name__ == '__main__':
 	client.run(DISCORD_TOKEN)
