@@ -36,7 +36,6 @@ async def on_message(message):
 	animated = dict()
 	for word in message.content.split():
 		if word.casefold() in emoji_names and word.casefold() not in helpers.OK_WORDS:
-			print(emoji_names[word.casefold()].animated)
 			if not emoji_names[word.casefold()].animated:
 				violations = True
 			else:
