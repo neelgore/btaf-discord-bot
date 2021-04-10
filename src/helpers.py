@@ -3,9 +3,13 @@ import discord
 import datetime
 import pytz
 from functools import lru_cache
+from collections import defaultdict
 
 OK_WORDS = {word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']}
 TIME_REGEX = re.compile('^(0?\d|1[012]):?([0-5]\d)\??$')
+NOT_RSVPS = {word.casefold() for word in ['no', 'kekw', 'depredge', 'sadge', 'smoge', 'nopers',
+	'omegalul', 'weirdchamp', 'huh']}
+REQUIRED_NUMBERS = defaultdict(lambda: 1, {'among us': 6, 'in-house': 6})
 
 @lru_cache(maxsize=1)
 def find_emote(client: discord.Client, name: str) -> discord.Emoji:
@@ -37,3 +41,7 @@ def ping_and_time(message: discord.Message) -> ([discord.Role], int) or None:
 		if time_to_wait:
 			return message.role_mentions, time_to_wait
 
+def message_rsvps(message: discord.Message) -> [discord.Reaction]:
+	only_rsvps = [react for react in message.reactions if react.emoji.name.casefold() not in NOT_RSVPS \
+		and react.count >= REQUIRED_NUMBERS[react.emoji.name.casefold()]]
+	return sorted(only_rsvps, key = lambda reaction: reaction.count, reverse=True)
