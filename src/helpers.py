@@ -10,6 +10,7 @@ TIME_REGEX = re.compile('^(0?\d|1[012]):?([0-5]\d)\??$')
 NOT_RSVPS = {word.casefold() for word in ['no', 'kekw', 'depredge', 'sadge', 'smoge', 'nopers',
 	'omegalul', 'weirdchamp', 'huh']}
 REQUIRED_NUMBERS = defaultdict(lambda: 1, {'among us': 6, 'in-house': 6})
+PINGS = set()
 
 @lru_cache(maxsize=1)
 def find_emote(client: discord.Client, name: str) -> discord.Emoji:
@@ -45,3 +46,9 @@ def message_rsvps(message: discord.Message) -> [discord.Reaction]:
 	only_rsvps = [react for react in message.reactions if react.emoji.name.casefold() not in NOT_RSVPS \
 		and react.count >= REQUIRED_NUMBERS[react.emoji.name.casefold()]]
 	return sorted(only_rsvps, key = lambda reaction: reaction.count, reverse=True)
+
+async def cancel_ping(message: discord.Message):
+	if message.id in PINGS:
+		PINGS.remove(message.id)
+		await message.channel.send('Ping canceled.')
+
