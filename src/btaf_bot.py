@@ -1,10 +1,10 @@
-import os
 import discord
+import os
 import helpers
-from dotenv import load_dotenv
+import dotenv
 
 
-load_dotenv()
+dotenv.load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 #Discord token is stored as an environment variable
 
@@ -20,30 +20,28 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
+
 	if message.author == client.user: return
 	#ignore bot's own messages
 
-	emoji_names = {emoji.name.casefold(): emoji for emoji in message.guild.emojis}
-	#prepare dict of emote names to emote objects
-
-	await helpers.deal_with_emotes(message, emoji_names)
+	await helpers.deal_with_emotes(message)
 	#replace messages with animated emotes with bot's version, because bot can use animated emotes
 
-	await helpers.handle_ping_and_time(message, emoji_names)
+	await helpers.handle_ping_and_time(message)
 	#schedule and perform pings in the future
 
 @client.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
-	await on_message_delete(before)
+	for emote in before.guild.emojis:
+		if emote.name.casefold() == 'weirdchamp'.casefold():
+			await before.remove_reaction(emote, client.user)
+			break
+	await helpers.cancel_ping(before)
 	await on_message(after)
 	#treat message edits as new messages
 
 @client.event
 async def on_message_delete(before: discord.Message):
-	try:
-		await before.remove_reaction(helpers.find_emote(client, 'weirdchamp'), client.user)
-	except discord.errors.NotFound:
-		pass
 	await helpers.cancel_ping(before)
 
 @client.event
@@ -58,3 +56,4 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
 
 if __name__ == '__main__':
 	client.run(DISCORD_TOKEN)
+
