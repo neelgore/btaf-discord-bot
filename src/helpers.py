@@ -130,7 +130,7 @@ def scheduled_time(hour: int, minute: int) -> (datetime.datetime, int):
 	'''Returns a datetime.datetime object along with number of seconds until scheduled time given
 	an hour and a minute'''
 	now = datetime.datetime.now(pytz.timezone('America/Los_Angeles'))
-	scheduled_time = now.replace(hour = hour, minute = minute, second = 0)
+	scheduled_time = now.replace(hour = hour%12, minute = minute, second = 0)
 	twelve_hours = datetime.timedelta(seconds=60*60*12)
 	while scheduled_time < now:
 		scheduled_time += twelve_hours
