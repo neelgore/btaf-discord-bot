@@ -3,10 +3,10 @@ import re
 import datetime
 import pytz
 import asyncio
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 
 
-OK_WORDS = frozenset({word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh']})
+OK_WORDS = frozenset({word.casefold() for word in ['no', 'yep', 'pog', 'true', 'huh', 'chad']})
 #words that aren't necessarily trying to use an emote
 
 NOT_RSVPS = frozenset({word.casefold() for word in ['no', 'kekw', 'depredge', 'sadge', 'smoge', 'nopers',
@@ -15,7 +15,7 @@ NOT_RSVPS = frozenset({word.casefold() for word in ['no', 'kekw', 'depredge', 's
 
 TIME_REGEX = re.compile('^(0?\d|1[012]):?([0-5]\d)\??$')
 
-REQUIRED_NUMBERS = defaultdict(lambda: 1, {'among us': 6, 'in-house': 6})
+REQUIRED_NUMBERS = defaultdict(lambda: 2, {'among us': 6, 'in-house': 6})
 #need this many rsvps to ping
 
 PINGS = {}
