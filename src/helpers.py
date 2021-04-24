@@ -15,7 +15,7 @@ NOT_RSVPS = frozenset({word.casefold() for word in ['no', 'kekw', 'depredge', 's
 
 TIME_REGEX = re.compile('^(0?\d|1[012]):?([0-5]\d)\??$')
 
-REQUIRED_NUMBERS = defaultdict(lambda: 2, {'among us': 6, 'in-house': 6})
+REQUIRED_NUMBERS = defaultdict(lambda: 2, {'among us': 6, 'in-house': 8})
 #need this many rsvps to ping
 
 PINGS = {}
