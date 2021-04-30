@@ -1,6 +1,6 @@
 import discord
 import os
-import helpers
+import coroutines
 import dotenv
 
 
@@ -24,25 +24,25 @@ async def on_message(message: discord.Message):
 	if message.author == client.user: return
 	#ignore bot's own messages
 
-	await helpers.deal_with_emotes(message)
+	await coroutines.deal_with_emotes(message)
 	#replace messages with animated emotes with bot's version, because bot can use animated emotes
 
-	await helpers.handle_ping_and_time(message)
+	await coroutines.handle_ping_and_time(message)
 	#schedule and perform pings in the future
 
 @client.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
-	for emote in before.guild.emojis:
-		if emote.name.casefold() == 'weirdchamp'.casefold():
-			await before.remove_reaction(emote, client.user)
-			break
-	await helpers.cancel_ping(before)
+	try:
+		await before.remove_reaction(functions.get_emote(before.guild, 'weirdchamp'), client.user)
+	except:
+		pass
+	await coroutines.cancel_ping(before)
 	await on_message(after)
 	#treat message edits as new messages
 
 @client.event
 async def on_message_delete(before: discord.Message):
-	await helpers.cancel_ping(before)
+	await coroutines.cancel_ping(before)
 
 @client.event
 async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
@@ -53,6 +53,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
 		if reaction.emoji.animated:
 			await reaction.message.remove_reaction(reaction.emoji, client.user)
 	#remove react if emote was animated, because it must have been a piggyback
+
+	await coroutines.just_hit_react_threshold(reaction.message)
 
 if __name__ == '__main__':
 	client.run(DISCORD_TOKEN)
