@@ -103,8 +103,7 @@ async def ping_after_n_minutes(message: discord.Message, n: int):
 
 	role = message.role_mentions[0]
 
-	if (top_react := functions.message_top_react(message)) \
-		and top_react.count >= constants.REQUIRED_NUMBERS[role.name.casefold()] and message.id in PINGS:
+	if (top_react := functions.message_top_react(message, role)):
 		to_be_pinged = {member for member in await top_react.users().flatten() \
 			if member.voice is None or member.voice.channel is None \
 			or member.voice.channel.guild != message.guild}
