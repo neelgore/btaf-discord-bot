@@ -32,10 +32,6 @@ async def on_message(message: discord.Message):
 
 @client.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
-	try:
-		await before.remove_reaction(functions.get_emote(before.guild, 'weirdchamp'), client.user)
-	except:
-		pass
 	await coroutines.cancel_ping(before)
 	await on_message(after)
 	#treat message edits as new messages
@@ -50,9 +46,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
 	#ignore bot's own reactions
 
 	if client.user in await reaction.users().flatten():
-		if reaction.emoji.animated:
-			await reaction.message.remove_reaction(reaction.emoji, client.user)
-	#remove react if emote was animated, because it must have been a piggyback
+		await reaction.message.remove_reaction(reaction.emoji, client.user)
+	#remove react because it must have been a piggyback
 
 	await coroutines.just_hit_react_threshold(reaction.message)
 

@@ -7,7 +7,7 @@ import functions
 
 PINGS = {}
 #message board for if pings are still scheduled, so an async thread can abort if ping was canceled
-#key is original message id, value is bot confirmation id
+#key is original message id, value is bot confirmation message id
 
 
 async def deal_with_emotes(message: discord.Message):
@@ -16,11 +16,15 @@ async def deal_with_emotes(message: discord.Message):
 	missed colons in a non-animated emote name. Changes instances of animated emote names to the
 	actually animated version'''
 
-	emoji_names = {emoji.name.casefold(): emoji for emoji in message.guild.emojis}
+	OK_WORDS = {'no', 'yep', 'pog', 'true', 'huh', 'chad', 'based'}
+	#words that aren't necessarily meaning to use the corresponding emote
+
+	emoji_names = {emoji.name.casefold(): emoji for emoji in message.guild.emojis
+		if emoji.name not in OK_WORDS}
 	casefolded = message.content.casefold()
 	tokenized = message.content.split()
 
-	if casefolded in emoji_names and message.reference is not None and emoji_names[casefolded].animated:
+	if casefolded in emoji_names and message.reference is not None:
 	#message wants to react an animated emote
 		emoji = emoji_names[casefolded]
 		original_message = await message.channel.fetch_message(message.reference.message_id)
@@ -29,30 +33,19 @@ async def deal_with_emotes(message: discord.Message):
 		return
 		#animated react job is done, so we skip the rest
 
-	violations = False
-	animated = {}
-	for word in tokenized:
-		if word.casefold() in emoji_names and word.casefold() not in constants.OK_WORDS:
-			if not emoji_names[word.casefold()].animated:
-				violations = True
-				break
-			else:
-				animated[word] = emoji_names[word.casefold()]
-	#populate animated and violations
+	animated = {word: emoji_names[word.casefold()] for word in tokenized if word.casefold() in emoji_names}
+	#populate animated
 
-	if violations:
-		await message.add_reaction(emoji_names['weirdchamp'.casefold()])
-	else:
-		if len(animated) > 0:
-			new_message = ' '.join((str(animated[word]) if word in animated else word) \
-				for word in tokenized)
-			if len(tokenized) == 1:
-				await message.channel.send(f'**{message.author.display_name}:**')
-				await message.channel.send(new_message)
-				#send emote in its own separate message so it appears big
-			else:
-				await message.channel.send(f'**{message.author.display_name}:** {new_message}')
-			await message.delete()
+	if len(animated) > 0:
+		new_message = ' '.join((str(animated[word]) if word in animated else word) \
+			for word in tokenized)
+		if len(tokenized) == 1:
+			await message.channel.send(f'**{message.author.display_name}:**')
+			await message.channel.send(new_message)
+			#send emote in its own separate message so it appears big
+		else:
+			await message.channel.send(f'**{message.author.display_name}:** {new_message}')
+		await message.delete()
 
 async def handle_ping_and_time(message: discord.Message):
 
