@@ -20,7 +20,7 @@ async def deal_with_emotes(message: discord.Message):
 	#words that aren't necessarily meaning to use the corresponding emote
 
 	emoji_names = {emoji.name.casefold(): emoji for emoji in message.guild.emojis
-		if emoji.name not in OK_WORDS}
+		if emoji.name.casefold() not in OK_WORDS}
 	casefolded = message.content.casefold()
 	tokenized = message.content.split()
 
