@@ -44,7 +44,11 @@ async def deal_with_emotes(message: discord.Message):
 			await message.channel.send(new_message)
 			#send emote in its own separate message so it appears big
 		else:
-			await message.channel.send(f'**{message.author.display_name}:** {new_message}')
+			if message.reference is not None:
+				original_message = await message.channel.fetch_message(message.reference.message_id)
+				await original_message.reply(f'**{message.author.display_name}:** {new_message}')
+			else:
+				await message.channel.send(f'**{message.author.display_name}:** {new_message}')
 		await message.delete()
 
 async def handle_ping_and_time(message: discord.Message):
